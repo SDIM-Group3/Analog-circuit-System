@@ -51,13 +51,13 @@ try:
 		write(tmp)
 		print("tmp=")
 		print(tmp)
-		tryy = (tmp-183)*5.00
+		tryy = (tmp-125)
 		if tryy < 0:
 			tryy = 0;
 		if tryy > 100:
 			tryy = 100
 		pwm.ChangeDutyCycle(tryy)
 		#GPIO.output(37,GPIO.HIGH)
-		time.sleep(0.001)
+		time.sleep(0.01)
 except KeyboardInterrupt:
     GPIO.cleanup()
