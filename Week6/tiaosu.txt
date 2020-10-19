@@ -1,0 +1,52 @@
+import RPi.GPIO as GPIO    # 引入GPIO模块
+
+ENA = 13    #定义对应的引脚变量（等一下用）
+IN1 = 19
+IN2 = 26
+hz = 500     #定义频率变量（等一下用）
+speed = 0    #定义占空比变量（等下用）运行时默认的占空比为0
+
+GPIO.setmode(GPIO.BCM)    # 使用BCM编号方式
+GPIO.setup(ENA, GPIO.OUT)  # 将连接ENA的GPIO引脚设置为输出模式
+GPIO.setup(IN1, GPIO.OUT)   # 将连接IN1的GPIO引脚设置为输出模式
+GPIO.setup(IN2, GPIO.OUT)   # 将连接IN2的GPIO引脚设置为输出模式
+pwm = GPIO.PWM(ENA, hz)   # 设置向ENA输入PWM脉冲信号，频率为hz并创建PWM对象
+pwm.start(speed)         # 以speed的初始占空比开始向ENA输入PWM脉冲信号
+
+a = int(input("Positive : 0 , Reversal:1,  Stop: 2, speed:3   :")) #键盘输入0、1、2、3可控制电机正、反、停和改变速度。
+speed = int(input("Please input the motor speed (0-100): "))     #键盘输入电机开始运行的速度
+while True:
+    if a == 0:     #如果键盘输入的数值为0，则电机正转
+        while 1:
+            if a == 3:   #如果键盘输入的数值为3，输入数值0~100可改变占空比来改变电机转速
+                speed = int(input("Please input the motor speed (0-100): "))
+            GPIO.output(IN1, GPIO.LOW)
+            GPIO.output(IN2, GPIO.HIGH)
+            pwm.ChangeDutyCycle(speed)   # 改变PWM占空比
+            a = int(input("Positive : 0 , Reversal:1,  Stop: 2, speed: 3  :"))
+            if (a == 1 or a == 2):
+                break
+
+    if a == 1:      #如果键盘输入的数值为1，则电机反转
+        while 1:
+            if a == 3:
+                speed = int(input("Please input the motor speed (0-100): "))
+            GPIO.output(IN1, GPIO.HIGH)
+            GPIO.output(IN2, GPIO.LOW)
+            pwm.ChangeDutyCycle(speed)
+            a = int(input("Positive : 0 , Reversal:1,  Stop: 2, speed: 3  :"))
+            if (a == 0 or a == 2):
+                break
+
+    if a == 2:      #如果键盘输入的数值为2，则电机停止转动
+        while 1:
+             if a == 3:
+                speed = int(input("Please input the motor speed (0-100): "))
+             GPIO.output(IN1, GPIO.LOW)
+             GPIO.output(IN2, GPIO.LOW)
+             GPIO.output(ENA, GPIO.LOW)
+             a = int(input("Positive : 0 , Reversal:1,  Stop: 2, speed: 3  :"))
+             if (a == 0 or a == 1):
+                 break            
+input()
+GPIO.cleanup()
