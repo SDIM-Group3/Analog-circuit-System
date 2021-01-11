@@ -1,0 +1,54 @@
+import time
+import RPi.GPIO as GPIO
+import wave
+import numpy as np
+import os
+
+led_pin = 37
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(led_pin, GPIO.OUT)
+pwm = GPIO.PWM(37, 80)
+pwm.start(0)
+f = wave.open('/home/pi/Downloads/ttt.wav', 'rb')
+params = f.getparams()
+nchannels, sampwidth, framerate, nframes = params[:4]
+strData = f.readframes(nframes)
+sample_time = 1.00/framerate
+time_ = nframes / framerate
+num = int(time_/sample_time)
+waveData = np.fromstring(strData, dtype=np.int16)
+waveData = waveData*100.00/(max(abs(waveData)))
+len = len(waveData)
+k = int(0.001/sample_time)
+print("Will start")
+
+try:
+    while True:
+		'''
+		GPIO.output(led_pin, GPIO.HIGH)
+		time.sleep(0.2)
+		GPIO.output(led_pin, GPIO.LOW)
+		time.sleep(0.2)
+		'''
+		'''
+		for i in xrange(0,101,1):
+			pwm.ChangeDutyCycle(i)
+			time.sleep(.02)
+		for i in xrange(100,-1,-1):
+			pwm.ChangeDutyCycle(i)
+			time.sleep(.02)
+		'''
+		
+		for i in range(0, num, 1):
+			if(k*len/num*i > len):
+				break
+			if(abs((waveData[k*len/num*i])) > 100):
+				waveData[k*len/num*i] = 100
+			pwm.ChangeDutyCycle(abs((waveData[k*len/num*i])))
+			print(waveData[k*len/num*i])
+			time.sleep(0.001)
+		GPIO.cleanup()
+		break
+except KeyboardInterrupt:
+    GPIO.cleanup()
+© 2021 GitHub, Inc.
